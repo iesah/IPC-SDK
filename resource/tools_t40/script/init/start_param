@@ -1,0 +1,24 @@
+sensor:sc2232
+isp_param:isp_clk=200000000
+carrier_server_param:--nrvbs 3
+
+sensor:gc2053
+sensor_param:sensor_max_fps=25
+isp_param:isp_clk=200000000
+carrier_server_param:--nrvbs 3
+
+sensor:sc2135
+isp_param:isp_clk=200000000
+carrier_server_param:--nrvbs 3
+
+sensor:imx307
+isp_param:isp_clk=200000000
+carrier_server_param:--nrvbs 2
+
+sensor:sc8238
+isp_param:isp_clk=300000000
+carrier_server_param:--nrvbs 2
+
+sensor:os08a10
+isp_param:isp_clk=300000000
+carrier_server_param:--nrvbs 2

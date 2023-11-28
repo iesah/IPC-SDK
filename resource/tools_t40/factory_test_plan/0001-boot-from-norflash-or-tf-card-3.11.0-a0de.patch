@@ -1,0 +1,203 @@
+diff --git a/arch/mips/cpu/xburst/ddr_reg_data.h b/arch/mips/cpu/xburst/ddr_reg_data.h
+index 60632f9..c113412 100644
+--- a/arch/mips/cpu/xburst/ddr_reg_data.h
++++ b/arch/mips/cpu/xburst/ddr_reg_data.h
+@@ -49,7 +49,7 @@ extern struct ddr_registers *g_ddr_param;
+ #define DDRC_TIMING6_VALUE		g_ddr_param->ddrc_timing6
+ #define DDRC_AUTOSR_EN_VALUE		g_ddr_param->ddrc_autosr
+ #define DDRP_DCR_VALUE			g_ddr_param->ddrp_dcr
+-#define	DDRP_MR0_VALUE			g_ddr_param->ddrp_mr0
++#define	DDRP_MR0_VALU			g_ddr_param->ddrp_mr0
+ #define	DDRP_MR1_VALUE			g_ddr_param->ddrp_mr1
+ #define	DDRP_MR2_VALUE			g_ddr_param->ddrp_mr2
+ #define	DDRP_MR3_VALUE			g_ddr_param->ddrp_mr3
+diff --git a/common/cmd_sdupdate.c b/common/cmd_sdupdate.c
+index b0c21b2..82318c9 100755
+--- a/common/cmd_sdupdate.c
++++ b/common/cmd_sdupdate.c
+@@ -36,6 +36,7 @@
+ #define AU_KERNEL	"kernel"
+ #define AU_ROOTFS	"rootfs"
+ #define AU_FW		"demo.bin"
++#define AU_UVC		"uimage.uvc"
+ 
+ struct flash_layout {
+ 	long start;
+@@ -66,16 +67,18 @@ static int au_stor_curr_dev; /* current device */
+ #define IDX_KERNEL	1
+ #define IDX_ROOTFS	2
+ #define IDX_FW	3
++#define IDX_UVC	4
+ 
+ /* max. number of files which could interest us */
+-#define AU_MAXFILES 4
++#define AU_MAXFILES 5
+ 
+ /* pointers to file names */
+ char *aufile[AU_MAXFILES] = {
+ 	AU_UBOOT,
+ 	AU_KERNEL,
+ 	AU_ROOTFS,
+-	AU_FW
++	AU_FW,
++	AU_UVC
+ };
+ 
+ /* sizes of flash areas for each file */
+@@ -83,7 +86,8 @@ long ausize[AU_MAXFILES] = {
+ 	AU_FL_UBOOT_ND - AU_FL_UBOOT_ST,
+ 	AU_FL_KERNEL_ND - AU_FL_KERNEL_ST,
+ 	AU_FL_ROOTFS_ND - AU_FL_ROOTFS_ST,
+-	AU_FL_FW_ND - AU_FL_FW_ST
++	AU_FL_FW_ND - AU_FL_FW_ST,
++	AU_FL_KERNEL_ND - AU_FL_KERNEL_ST,
+ };
+ 
+ /* array of flash areas start and end addresses */
+@@ -92,11 +96,14 @@ struct flash_layout aufl_layout[AU_MAXFILES] = {
+ 	{ AU_FL_KERNEL_ST,	AU_FL_KERNEL_ND,   },
+ 	{ AU_FL_ROOTFS_ST,	AU_FL_ROOTFS_ND,   },
+ 	{ AU_FL_FW_ST,	AU_FL_FW_ND,   },
++	{ AU_FL_KERNEL_ST,	AU_FL_KERNEL_ND,   },
+ };
+ 
+ /* where to load files into memory */
+ #define LOAD_ADDR ((unsigned char *)0x82000000)
++#define LOAD_OTHER_KERNEL ((unsigned char*)0x80600000)
+ 
++static unsigned char *default_load_addr = LOAD_ADDR;
+ /* the app is the largest image */
+ #define MAX_LOADSZ ausize[IDX_FW]
+ 
+@@ -107,7 +114,7 @@ static int au_check_cksum_valid(int idx, long nbytes)
+ 	image_header_t *hdr;
+ 	unsigned long checksum;
+ 
+-	hdr = (image_header_t *)LOAD_ADDR;
++	hdr = (image_header_t *)default_load_addr;
+ 
+ 	if (nbytes != (sizeof(*hdr) + ntohl(hdr->ih_size))) {
+ 		printf("Image %s bad total SIZE\n", aufile[idx]);
+@@ -116,7 +123,7 @@ static int au_check_cksum_valid(int idx, long nbytes)
+ 	/* check the data CRC */
+ 	checksum = ntohl(hdr->ih_dcrc);
+ 
+-	if (crc32(0, (unsigned char const *)(LOAD_ADDR + sizeof(*hdr)),
++	if (crc32(0, (unsigned char const *)(default_load_addr + sizeof(*hdr)),
+ 			ntohl(hdr->ih_size)) != checksum) {
+ 		printf("Image %s bad data checksum\n", aufile[idx]);
+ 		return -1;
+@@ -133,7 +140,7 @@ static int au_check_header_valid(int idx, long nbytes)
+ 	char env[20];
+ 	char auversion[20];
+ 
+-	hdr = (image_header_t *)LOAD_ADDR;
++	hdr = (image_header_t *)default_load_addr;
+ 	/* check the easy ones first */
+ #if 0
+ 	#define CHECK_VALID_DEBUG
+@@ -213,7 +220,7 @@ static int au_do_update(int idx, long sz)
+ 	void *buf;
+ 	char *pbuf;
+ 
+-	hdr = (image_header_t *)LOAD_ADDR;
++	hdr = (image_header_t *)default_load_addr;
+ 
+ 	start = aufl_layout[idx].start;
+ 	len = aufl_layout[idx].end - aufl_layout[idx].start;
+@@ -228,7 +235,7 @@ static int au_do_update(int idx, long sz)
+ 		return 1;
+ 	}
+ 
+-	buf = map_physmem((unsigned long)LOAD_ADDR, len, MAP_WRBACK);
++	buf = map_physmem((unsigned long)default_load_addr, len, MAP_WRBACK);
+ 	if (!buf) {
+ 		puts("Failed to map physical memory\n");
+ 		return 1;
+@@ -263,6 +270,49 @@ static int au_do_update(int idx, long sz)
+ 	return 0;
+ }
+ 
++static int boot_other_kernel(int i)
++{
++	void *buf;
++	long sz;
++	int res, cnt;
++
++	default_load_addr = LOAD_OTHER_KERNEL;
++	printf("#### i = %d %s ####\n", i, aufile[i]);
++	/* just read the header */
++	sz = file_fat_read(aufile[i], default_load_addr,
++			sizeof(image_header_t));
++	debug("read %s sz %ld hdr %d\n",
++			aufile[i], sz, sizeof(image_header_t));
++	if (sz <= 0 || sz < sizeof(image_header_t)) {
++		debug("%s not found\n", aufile[i]);
++		return 0;
++	}
++
++	if (au_check_header_valid(i, sz) < 0) {
++		debug("%s header not valid\n", aufile[i]);
++		return -1;
++	}
++
++	memset(default_load_addr, 0xff, ausize[i]);
++	sz = file_fat_read(aufile[i], default_load_addr, MAX_LOADSZ);
++
++	debug("read %s sz %ld hdr %d\n",
++			aufile[i], sz, sizeof(image_header_t));
++	if (sz <= 0 || sz <= sizeof(image_header_t)) {
++		debug("%s not found\n", aufile[i]);
++	}
++
++	if (au_check_cksum_valid(i, sz) < 0) {
++		debug("%s checksum not valid\n", aufile[i]);
++		return -1;
++	}
++
++	printf("### boot new kernel ####\n");
++	run_command("bootm 0x80600000", "0");
++	printf("###### goback uvc error!  ####\n");
++	return 0;
++}
++
+ 
+ /*
+  * If none of the update file(u-boot, kernel or rootfs) was found
+@@ -282,8 +332,13 @@ static int update_to_flash(void)
+ 	for (i = 0; i < AU_MAXFILES; i++) {
+ 		if (LOAD_ID != -1)
+ 			i = LOAD_ID;
++		default_load_addr = LOAD_ADDR;
++		if(i == IDX_UVC){
++			boot_other_kernel(i);
++			continue;
++		}
+ 		/* just read the header */
+-		sz = file_fat_read(aufile[i], LOAD_ADDR,
++		sz = file_fat_read(aufile[i], default_load_addr,
+ 			sizeof(image_header_t));
+ 		debug("read %s sz %ld hdr %d\n",
+ 			aufile[i], sz, sizeof(image_header_t));
+@@ -305,7 +360,7 @@ static int update_to_flash(void)
+ 				continue;
+ 		}
+ 
+-		sz = file_fat_read(aufile[i], LOAD_ADDR, MAX_LOADSZ);
++		sz = file_fat_read(aufile[i], default_load_addr, MAX_LOADSZ);
+ 		debug("read %s sz %ld hdr %d\n",
+ 			aufile[i], sz, sizeof(image_header_t));
+ 		if (sz <= 0 || sz <= sizeof(image_header_t)) {
+diff --git a/include/configs/isvp_t20.h b/include/configs/isvp_t20.h
+index 4ff24c3..c2140c9 100644
+--- a/include/configs/isvp_t20.h
++++ b/include/configs/isvp_t20.h
+@@ -137,7 +137,7 @@
+ #endif
+ 
+ #ifdef CONFIG_SFC_NOR
+-	#define CONFIG_BOOTCOMMAND "sf probe;sf read 0x80600000 0x40000 0x280000; bootm 0x80600000"
++	#define CONFIG_BOOTCOMMAND "sdupdate;sf probe;sf read 0x80600000 0x40000 0x280000; bootm 0x80600000"
+ #endif /* CONFIG_SFC_NOR */
+ 
+ /**

@@ -1,0 +1,7 @@
+lib: gc540903
+uboot: g32f81a6
+kernel-4.4.94: ge0714c6
+busybox: gf42c3e5
+drivers: ge5c82fd
+doc: ge4c6113
+prebuilt: gb3b954d

@@ -1,0 +1,9 @@
+1.注意Makefile中内核路径配置
+$(BASE_LINKS):
+	ln -s ../../../../opensource/kernel-4.4.94/fs/yaffs2/$@ $@
+2.使用方法：
+make clean;make
+生成mkyaffs2image后执行：
+./mkyaffs2image 源文件 目的文件
+列如：
+./mkyaffs2image root-uclibc-toolchain720 root-uclibc-toolchain720.bin
