@@ -1,0 +1,55 @@
+config INGENIC_SFC_V1
+	tristate "Ingenic series SFC driver v1"
+	depends on  MACH_XBURST2
+	help
+		SFC driver version v1.0 for Ingenic series SoCs
+
+if INGENIC_SFC_V1
+
+config INGENIC_SFC_V1_NOR
+	tristate "Ingenic JZ SFC nor"
+	depends on INGENIC_SFC_V1
+	help
+		SFC driver for Ingenic JZ sfc nor
+
+config INGENIC_SFC_V1_NAND
+	tristate "Ingenic JZ SFC nand"
+	depends on INGENIC_SFC_V1
+	help
+		SFC driver for Ingenic JZ sfc nand
+
+config SFC_DMA
+	bool "used dma"
+	depends on INGENIC_SFC_V1_NOR
+	help
+		used dma
+
+config SFC_SPEED
+    int "JZ SFC speed in MHZ"
+	range 10 200
+	default 50
+	depends on INGENIC_SFC_V1
+	help
+	    Select sfc speed.
+		Examples:
+			50 =>  50 MHZ
+
+choice
+	prompt "sfc Mode"
+	help
+	  Select sfc Mode
+
+config SPI_STARDARD
+	bool "standard spi mode"
+	depends on INGENIC_SFC_V1
+	help
+	  Say Y here to enable spi STANDARD MODE
+
+config SPI_QUAD
+	bool "quad spi mode"
+	depends on INGENIC_SFC_V1
+	help
+	  Say Y Here to enable spi QUAD MODE
+endchoice
+
+endif

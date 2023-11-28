@@ -1,0 +1,100 @@
+/*
+ * IRQ number in T40 INTC definition.
+ *   Only support T40 now. 2019-7-6
+ *
+ * Copyright (C) 2019 Ingenic Semiconductor Co., Ltd.
+ */
+
+#ifndef __INTC_IRQ_H__
+#define __INTC_IRQ_H__
+
+#include <irq.h>
+
+enum {
+/* interrupt controller interrupts */
+/*ISR0*/
+	IRQ_IRQ_RESERVED0=IRQ_INTC_BASE,
+	IRQ_AIC0,
+	IRQ_SYS_LEP,           /* RISC-V */
+    IRQ_MIPI_DSI,
+	IRQ_MIPI_RX_4L,
+	IRQ_MIPI_RX_2L,
+	IRQ_IPU,
+	IRQ_SFC,
+	IRQ_SSI1,
+	IRQ_SSI0,
+	IRQ_PDMA,
+	IRQ_SSISLV,
+	IRQ_DMIC,
+	IRQ_RESERVED13,
+	IRQ_GPIO3,
+	IRQ_GPIO2,
+	IRQ_GPIO1,
+	IRQ_GPIO0,
+#define IRQ_GPIO_PORT(N) (IRQ_GPIO0 - (N))
+	IRQ_SADC,
+	IRQ_RESERVED19,
+	IRQ_LCD,
+	IRQ_OTG,
+	IRQ_HASH,
+	IRQ_AES,
+	IRQ_RSA,
+	IRQ_TCU2,
+	IRQ_TCU1,
+	IRQ_TCU0,
+	IRQ_S2_VIC,
+	IRQ_S1_VIC,
+	IRQ_S0_VIC,
+	IRQ_ISP,
+
+/*ISR1*/
+	IRQ_RESERVED32,
+	IRQ_RESERVED33,
+	IRQ_DTRNG,
+	IRQ_RESERVED35,
+	IRQ_MSC1,
+	IRQ_MSC0,
+	IRQ_RESERVED38,
+	IRQ_BSCALER1,
+	IRQ_BSCALER0,
+	IRQ_DDR_DWU,            /* DDR watch unit */
+	IRQ_DRAW_BOX,
+	IRQ_VO,
+	IRQ_HARB2,
+	IRQ_I2D,
+	IRQ_RESERVED46,
+	IRQ_CPM,
+	IRQ_UART3,
+	IRQ_UART2,
+	IRQ_UART1,
+	IRQ_UART0,
+	IRQ_DDR,
+	IRQ_MON,
+	IRQ_EFUSE,
+	IRQ_GMAC,
+	IRQ_RESERVED56,
+	IRQ_I2C3,
+	IRQ_I2C2,
+	IRQ_I2C1,
+	IRQ_I2C0,
+	IRQ_PDMAM,
+	IRQ_EL150,
+	IRQ_RADIX,
+#define IRQ_MCU_GPIO_PORT(N) (IRQ_MCU_GPIO0 + (N))
+	IRQ_MCU_GPIO0,
+	IRQ_MCU_GPIO1,
+	IRQ_MCU_GPIO2,
+	IRQ_MCU_GPIO3,
+	IRQ_MCU_GPIO4,
+	IRQ_MCU_GPIO5,
+};
+#if 0
+enum {
+	IRQ_OST = IRQ_OST_BASE,
+};
+#endif
+enum {
+	IRQ_MCU = IRQ_MCU_BASE,
+};
+
+#endif

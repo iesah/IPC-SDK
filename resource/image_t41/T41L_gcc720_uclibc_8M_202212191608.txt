@@ -1,0 +1,4 @@
+gcc_version: gcc version 7.2.0 (Ingenic Linux-Release5.1.4.1-Default(xburst2(fp64)+glibc2.29+Go language) 2022.08-08 10:51:21)
+uboot_model: T41_L
+roofs_libc : uclibc
+driver :  audio  avpu  sensor_gc4663_t41  sensor_imx327_t41  sinfo  tx-isp-t41

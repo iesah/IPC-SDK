@@ -1,0 +1,34 @@
+menuconfig FB_JZ_V16
+	tristate "JZ LCDC framebuffer V1.6"
+	depends on FB
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	help
+	  Framebuffer support for the X2000 SoC.
+
+choice
+	prompt "SLCD or TFT"
+	depends on FB_JZ_V16
+
+	config SLCD
+		bool "SLCD"
+
+	config TFT
+		bool "TFT"
+endchoice
+
+config MIPI_TX
+	tristate "MIPI_TX"
+	depends on FB_JZ_V16
+choice
+	prompt "2 LANE or 4 LANE"
+	depends on MIPI_TX
+
+	config MIPI_2LANE
+		bool "2LANE"
+
+	config MIPI_4LANE
+		bool "4LANE"
+endchoice
+

@@ -1,0 +1,15 @@
+menuconfig FB_JZ_V15
+	tristate "JZ LCDC framebuffer V1.5"
+	depends on FB
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	help
+	  Framebuffer support for the X2000 DPU SoC.
+
+config DPU_GPIO_DRIVE_STRENGTH
+        int "Dpu gpio drive strength[0..7]"
+        depends on SOC_X2000_V12 && FB_JZ_V15 && !JZ_MIPI_DSI
+        default 5
+        help
+		Dpu gpio drive strength

@@ -1,0 +1,17 @@
+
+choice
+	prompt "Chip type"
+	depends on SOC_T40
+	default CHIP_T40
+
+config CHIP_T40
+       bool "chip-t40"
+       select TRACEPOINTS
+       select SYS_SUPPORTS_HIGHMEM
+       select GENERIC_CLOCKEVENTS_BROADCAST
+
+endchoice
+
+if CHIP_T40
+source "arch/mips/xburst2/soc-t40/chip-t40/Kconfig"
+endif

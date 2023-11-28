@@ -1,0 +1,8 @@
+lib: g94738fc
+uboot: gcdde619
+kernel-3.10.14: gb72cc2a
+kernel-4.4.94: g7dcdc77
+busybox: gca53d87
+drivers: g56123f9
+doc: gb833b48
+prebuilt: g7825650

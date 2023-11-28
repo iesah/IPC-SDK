@@ -1,0 +1,9 @@
+menuconfig FB_JZ_V14
+	tristate "JZ LCDC framebuffer V1.4"
+	depends on FB
+	select FB_JZ_DISPLAYS_V14
+	help  
+	  Framebuffer support for the T41 SoC.
+
+source "drivers/video/jz_fb_v14/displays/Kconfig"
+

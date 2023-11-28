@@ -1,0 +1,18 @@
+
+choice
+	prompt "Platform type"
+	depends on CHIP_T41
+	default PLATFORM_T41_ISVP
+
+config PLATFORM_T41_ISVP
+	bool "isvp"
+
+endchoice
+
+config PRODUCT_NAME
+	string
+	default "isvp" if PLATFORM_T41_ISVP
+
+if PLATFORM_T41_ISVP
+source "arch/mips/xburst2/soc-t41/chip-t41/isvp/Kconfig"
+endif

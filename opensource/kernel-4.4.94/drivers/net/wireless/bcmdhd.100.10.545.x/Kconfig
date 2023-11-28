@@ -1,0 +1,60 @@
+config BCMDHD_100_10_545_X
+	tristate "Broadcom FullMAC wireless cards support ver:100.10.545.x"
+	---help---
+	  This module adds support for wireless adapters based on
+	  Broadcom FullMAC chipset.
+
+config BCMDHD_100_10_545_X_FW_PATH
+	depends on BCMDHD_100_10_545_X
+	string "Firmware path"
+	default "/system/etc/firmware/fw_bcmdhd.bin"
+	---help---
+	  Path to the firmware file.
+
+config BCMDHD_100_10_545_X_NVRAM_PATH
+	depends on BCMDHD_100_10_545_X
+	string "NVRAM path"
+	default "/system/etc/firmware/nvram.txt"
+	---help---
+	  Path to the calibration file.
+
+config BCMDHD_100_10_545_X_WEXT
+	bool "Enable WEXT support"
+	depends on BCMDHD_100_10_545_X && CFG80211 = n
+	select WIRELESS_EXT
+	select WEXT_PRIV
+	help
+	  Enables WEXT support
+
+choice
+	prompt "Enable Chip Interface"
+	depends on BCMDHD_100_10_545_X
+	---help---
+		Enable Chip Interface.
+config BCMDHD_100_10_545_X_SDIO
+		bool "SDIO bus interface support"
+		depends on BCMDHD_100_10_545_X && MMC
+config BCMDHD_100_10_545_X_PCIE
+		bool "PCIe bus interface support"
+		depends on BCMDHD_100_10_545_X && PCI
+config BCMDHD_100_10_545_X_USB
+		bool "USB bus interface support"
+		depends on BCMDHD_100_10_545_X && USB
+endchoice
+
+choice
+	depends on BCMDHD_100_10_545_X && BCMDHD_100_10_545_X_SDIO
+	prompt "Interrupt type"
+	---help---
+		Interrupt type
+config BCMDHD_100_10_545_X_OOB
+	depends on BCMDHD_100_10_545_X && BCMDHD_100_10_545_X_SDIO
+	bool "Out-of-Band Interrupt"
+	---help---
+		Interrupt from WL_HOST_WAKE.
+config BCMDHD_100_10_545_X_SDIO_IRQ
+	depends on BCMDHD_100_10_545_X && BCMDHD_100_10_545_X_SDIO
+	bool "In-Band Interrupt"
+	---help---
+	  Interrupt from SDIO DAT[1]
+endchoice

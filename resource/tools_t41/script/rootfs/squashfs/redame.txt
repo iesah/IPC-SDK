@@ -1,0 +1,1 @@
+运行./squashfs_make.sh 会生成squashfs的文件系统，具体参数解析请参考SDK下的文件系统制作指南

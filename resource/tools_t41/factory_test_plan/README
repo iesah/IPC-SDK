@@ -1,0 +1,21 @@
+产测软件流程：
+
+
+             +----+产品uImage+-----+产品ROOT
+             |
+UBOOT+-------+
+             |
+             +----+产测uImage+------+产品ROOT+-------挂载TF卡执行产测软件
+
+
+1. UBOOT启动时选择启动产品uImage和产测uImage。
+   原理是UBOOT阶段判断TF卡中是否有标志文件uImage.uvc，有的话就启动TF卡中uImage。
+   目录中patch，完成uImage选择功能
+
+2. 产测uImage启动产品ROOT后，挂载TF卡，运行TF卡中产测软件
+
+
+                   USB Cable
+Device +--------------------------------->PC
+
+3. 使用USB连接设备和PC，通信方式选择RNDIS+carrier工具和UVC，目录中有RNDIS的配置方法，SDK中有对应的UVC资源。

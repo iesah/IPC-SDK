@@ -1,0 +1,22 @@
+
+choice
+	prompt "Chip type"
+	depends on SOC_T41
+	default CHIP_T41
+
+config CHIP_T41
+       bool "chip-t41"
+       # select TRACEPOINTS
+       select SYS_SUPPORTS_HIGHMEM
+       select GENERIC_CLOCKEVENTS_BROADCAST
+
+endchoice
+
+if CHIP_T41
+source "arch/mips/xburst2/soc-t41/chip-t41/Kconfig"
+endif
+
+config KERNEL_3_10
+    depends on SOC_T41
+    bool "kernel3.10 version"
+    default y

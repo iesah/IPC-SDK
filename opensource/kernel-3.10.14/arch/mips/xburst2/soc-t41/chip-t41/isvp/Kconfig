@@ -1,0 +1,14 @@
+choice
+	prompt "Board type"
+	depends on PLATFORM_T41_ISVP
+	default BOARD_MARMOT
+
+config BOARD_MARMOT
+       bool "Marmot"
+       depends on PLATFORM_T41_ISVP
+
+endchoice
+
+config BOARD_NAME
+	string
+	default "Marmot" if BOARD_MARMOT
